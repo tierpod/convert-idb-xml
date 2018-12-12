@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<output>
+
+	<blogpost>
+		<url>http%3A%2F%2Fradio-t.com%2Ftemi_dlja_vipuskov%2Ftemyi-dlya-50%2F</url>
+		<title>Темы для #50</title>
+		<guid>68</guid>
+		<comments>
+			<comment id='13438060' parentid='13439997'>
+				<isAnon>1</isAnon>
+				<name><![CDATA[MrZombie]]></name>
+				<email>xxxxx@gmail.com</email>
+				<url>http://u1304.rpod.ru/</url>
+				<ip>0.0.0.0</ip>
+				<text><![CDATA[Это фейк???]]></text>
+				<date>2007-11-23 20:15:56</date>
+				<gmt>2007-11-23 20:15:56</gmt>
+				<score>0</score>
+			</comment>
+			<comment id='13439938' parentid='13439989'>
+				<isAnon>1</isAnon>
+				<name><![CDATA[umputun]]></name>
+				<email>umputun@gmail.com</email>
+				<url>http://radio-t.com</url>
+				<ip>0.0.0.0</ip>
+				<text><![CDATA[мы о нем рассказывали с несколько мес. наверное назад. В момент его анонса.]]></text>
+				<date>2007-09-04 19:30:45</date>
+				<gmt>2007-09-04 19:30:45</gmt>
+				<score>0</score>
+			</comment>
+		</comments>
+	</blogpost>
+
+	<blogpost>
+		<url>http%3A%2F%2Fradio-t.com%2Ftemi_dlja_vipuskov%2Ftemyi-dlya-50%2F</url>
+		<title>Темы для #50</title>
+		<guid>68</guid>
+		<comments>
+			<comment id='13438060' parentid='13439997'>
+				<isAnon>1</isAnon>
+				<name><![CDATA[MrZombie]]></name>
+				<email>xxxxx@gmail.com</email>
+				<url>http://u1304.rpod.ru/</url>
+				<ip>0.0.0.0</ip>
+				<text><![CDATA[Это фейк???]]></text>
+				<date>2007-11-23 20:15:56</date>
+				<gmt>2007-11-23 20:15:56</gmt>
+				<score>0</score>
+			</comment>
+			<comment id='13439938' parentid='13439989'>
+				<isAnon>1</isAnon>
+				<name><![CDATA[umputun]]></name>
+				<email>umputun@gmail.com</email>
+				<url>http://radio-t.com</url>
+				<ip>0.0.0.0</ip>
+				<text><![CDATA[мы о нем рассказывали с несколько мес. наверное назад. В момент его анонса.]]></text>
+				<date>2007-09-04 19:30:45</date>
+				<gmt>2007-09-04 19:30:45</gmt>
+				<score>0</score>
+			</comment>
+		</comments>
+	</blogpost>
+</output>
