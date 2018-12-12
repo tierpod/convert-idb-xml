@@ -3,9 +3,12 @@
 
 import argparse
 import json
+import re
 from datetime import datetime
+from urllib.parse import unquote
 
-from lxml import etree, objectify
+import requests
+from lxml import objectify
 
 
 def parse_args():
@@ -35,7 +38,8 @@ def parse_xml(path):
                 },
                 "locator": {
                     "site": "radiot",
-                    "url": str(comment["url"]),
+                    #"url": unquote(str(blogpost["url"])),
+                    "url": get_url(str(blogpost["title"])),
                 },
                 "score": str(comment["score"]),
                 "votes": {},
@@ -48,6 +52,25 @@ def convert_date(s):
     # 2007-09-04 19:30:45
     d = datetime.strptime(s, "%Y-%m-%d %H:%M:%S")
     return d.isoformat() + "Z"
+
+
+API_GET_PODCAST = "https://radio-t.com/site-api/podcast/{num}"
+RE_TITLE_NUM = re.compile(r"#(\d{1,3})$")
+URLS_CACHE = {}
+
+def get_url(podcast_title):
+    num = RE_TITLE_NUM.findall(podcast_title)
+    if not num:
+        raise ValueError("unable to extract podcast number from title")
+
+    num = num[0]
+    if num in URLS_CACHE:
+        return URLS_CACHE[num]
+
+    r = requests.get(API_GET_PODCAST.format(num=num))
+    url = r.json()["url"]
+    URLS_CACHE[num] = url
+    return url
 
 
 def main():
