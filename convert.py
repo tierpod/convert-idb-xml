@@ -18,11 +18,16 @@ def parse_xml(path):
     with open(path, "rb") as f:
         xml = f.read()
 
+
+    with open("titles.json", "rb") as f:
+        titles = json.load(f)
+
     result = []
     root = objectify.fromstring(xml)
     for blogpost in root.iterchildren():
         for comment in blogpost.comments.iterchildren():
             result.append({
+                "title": str(blogpost["title"]),
                 "id": "idb_%s" % str(comment.get("id")),
                 "pid": "idb_%s" % str(comment.get("parentid")),
                 "text": "<p>%s</p>" % str(comment["text"]),
@@ -31,17 +36,27 @@ def parse_xml(path):
                     "id": "idb_%s" % str(comment["name"]).replace(" ", "_"),
                     "picture": "",
                     "admin": False,
-                    "ip": str(comment["ip"]),
+                    "ip": "",
                 },
                 "locator": {
                     "site": "radiot",
-                    "url": str(comment["url"]),
+                    "url": extract_url(titles, str(blogpost["title"])),
                 },
                 "score": str(comment["score"]),
                 "votes": {},
                 "time": convert_date(str(comment["gmt"])),
             })
     return result
+
+
+def extract_url(titles, title):
+    title = title.strip().lower().replace("#", "").replace("&ndash;", "–")
+    for t in titles:
+        tt = t["title"].strip().lower()
+        if title.startswith(tt):
+            return t["url"]
+
+    return ""
 
 
 def convert_date(s):
