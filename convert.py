@@ -11,6 +11,7 @@ from lxml import etree, objectify
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("INPUT")
+    parser.add_argument("--print-empty-urls", action="store_true")
     return parser.parse_args()
 
 
@@ -23,11 +24,19 @@ def parse_xml(path):
         titles = json.load(f)
 
     result = []
+    empty_urls = []
     root = objectify.fromstring(xml)
     for blogpost in root.iterchildren():
         for comment in blogpost.comments.iterchildren():
+            url = extract_url(titles, str(blogpost["title"]))
+            if not url:
+                empty_urls.append({
+                    "title": str(blogpost["title"]),
+                    "id": str(comment.get("id")),
+                    "pid": str(comment.get("parentid")),
+                })
+
             result.append({
-                # "title": str(blogpost["title"]),
                 "id": "idb_%s" % str(comment.get("id")),
                 "pid": "idb_%s" % str(comment.get("parentid")),
                 "text": "<p>%s</p>" % str(comment["text"]),
@@ -40,13 +49,13 @@ def parse_xml(path):
                 },
                 "locator": {
                     "site": "radiot",
-                    "url": extract_url(titles, str(blogpost["title"])),
+                    "url": url,
                 },
                 "score": str(comment["score"]),
                 "votes": {},
                 "time": convert_date(str(comment["gmt"])),
             })
-    return result
+    return result, empty_urls
 
 
 def extract_url(titles, title):
@@ -67,8 +76,11 @@ def convert_date(s):
 
 def main():
     args = parse_args()
-    data = parse_xml(args.INPUT)
-    print(json.dumps(data, ensure_ascii=False, indent=2))
+    data, empty_urls = parse_xml(args.INPUT)
+    if args.print_empty_urls:
+        print(json.dumps(empty_urls, ensure_ascii=False, indent=2))
+    else:
+        print(json.dumps(data, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
