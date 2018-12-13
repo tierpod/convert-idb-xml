@@ -27,7 +27,7 @@ def parse_xml(path):
     for blogpost in root.iterchildren():
         for comment in blogpost.comments.iterchildren():
             result.append({
-                "title": str(blogpost["title"]),
+                # "title": str(blogpost["title"]),
                 "id": "idb_%s" % str(comment.get("id")),
                 "pid": "idb_%s" % str(comment.get("parentid")),
                 "text": "<p>%s</p>" % str(comment["text"]),
