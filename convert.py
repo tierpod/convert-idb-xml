@@ -78,9 +78,12 @@ def main():
     args = parse_args()
     data, empty_urls = parse_xml(args.INPUT)
     if args.print_empty_urls:
-        print(json.dumps(empty_urls, ensure_ascii=False, indent=2))
+        result = empty_urls
     else:
-        print(json.dumps(data, ensure_ascii=False, indent=2))
+        result = data
+
+    for i in result:
+        print(i)
 
 
 if __name__ == "__main__":
