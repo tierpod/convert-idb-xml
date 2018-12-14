@@ -59,7 +59,7 @@ def parse_xml(path):
 
 
 def extract_url(titles, title):
-    title = title.strip().lower().replace("#", "").replace("&ndash;", "–")
+    title = title.strip().lower().replace("#", "").replace("&ndash;", "–").replace("tемы", "темы")
     for t in titles:
         tt = t["title"].strip().lower()
         if title.startswith(tt):
