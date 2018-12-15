@@ -36,9 +36,14 @@ def parse_xml(path):
                     "pid": str(comment.get("parentid")),
                 })
 
+            parent_id = str(comment.get("parentid"))
+            if parent_id == "0":
+                parent_id = ""
+            else:
+                parent_id = "idb_%s" % parent_id
             result.append({
                 "id": "idb_%s" % str(comment.get("id")),
-                "pid": "idb_%s" % str(comment.get("parentid")),
+                "pid": parent_id,
                 "text": "<p>%s</p>" % str(comment["text"]),
                 "user": {
                     "name": str(comment["name"]),
@@ -83,7 +88,7 @@ def main():
         result = data
 
     for i in result:
-        print(i)
+        print(json.dumps(i, ensure_ascii=False))
 
 
 if __name__ == "__main__":
