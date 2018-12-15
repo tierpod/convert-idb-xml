@@ -35,6 +35,7 @@ def parse_xml(path):
                     "id": str(comment.get("id")),
                     "pid": str(comment.get("parentid")),
                 })
+                url = "https://radio-t.com/old_comments_idb"
 
             parent_id = str(comment.get("parentid"))
             if parent_id == "0":
