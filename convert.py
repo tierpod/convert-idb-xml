@@ -56,7 +56,7 @@ def parse_xml(path):
                     "site": "radiot",
                     "url": url,
                 },
-                "score": str(comment["score"]),
+                "score": int(comment["score"]),
                 "votes": {},
                 "time": convert_date(str(comment["gmt"])),
             })
