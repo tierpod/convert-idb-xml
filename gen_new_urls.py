@@ -3,9 +3,6 @@
 
 import argparse
 import json
-from datetime import datetime
-
-from lxml import etree, objectify
 
 
 def parse_args():
