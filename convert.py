@@ -163,8 +163,7 @@ def main():
         groups = group_comments(result)
         filter_doubles(groups, result)
         for i in groups.values():
-            for ii in i:
-                print(ii.to_json())
+            print(i[0].to_json())
         return
 
     if args.print_empty_urls:
