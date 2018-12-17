@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import hashlib
 import json
 from datetime import datetime
 
@@ -15,6 +16,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("INPUT")
     parser.add_argument("--print-empty-urls", action="store_true")
+    parser.add_argument("--filter-doubles", action="store_true")
     return parser.parse_args()
 
 
@@ -59,6 +61,27 @@ class Comment(object):
         return self._comment["locator"]["url"] == UNKNOWN_URL
 
 
+    def id(self):
+        s = (self._comment["text"] + self._comment["time"] + self._comment["user"]["name"])
+        return hashlib.sha256(s.encode("utf-8")).hexdigest()
+
+
+    def __eq__(self, item):
+        if (self._comment["text"] == item._comment["text"]) \
+            and (self._comment["time"] == item._comment["time"]) \
+            and (self._comment["user"] == item._comment["user"]):
+            return True
+
+        return False
+
+
+    def __str__(self):
+        return "Comment(id=%s, pid=%s, user=%s, url=%s)" % (
+            self._comment["id"], self._comment["pid"], self._comment["user"]["name"],
+            self._comment["locator"]["url"],
+        )
+
+
 def parse_xml(path):
     with open(path, "rb") as f:
         xml = f.read()
@@ -67,7 +90,6 @@ def parse_xml(path):
         titles = json.load(f)
 
     result = []
-    empty_urls = []
     root = objectify.fromstring(xml)
     for blogpost in root.iterchildren():
         for comment in blogpost.comments.iterchildren():
@@ -94,16 +116,64 @@ def convert_date(s):
     return d.isoformat() + "Z"
 
 
+def group_comments(comments):
+    result = {}
+    for c in comments:
+        cid = c.id()
+        if cid in result:
+            result[cid].append(c)
+        else:
+            result[cid] = [c]
+    return result
+
+
+def filter_doubles(groups, comments):
+    """На id комментария-дубля могут быть ответы и надо давить дупликаты с учетом этого.
+
+    Убираем те комментарии-дубли, на id которых не ссылаются никакие другие комментарии.
+
+    Модифицирует groups.
+    """
+
+    for id_, group in groups.items():
+        # один комментарий, пропускаем
+        if len(group) == 1:
+            continue
+        # больше одного комментария с одинаковым id
+        filtered_group = []
+        for g in group:
+            for c in comments:
+                # если на комментарий, который входит в группу дублей, есть ссылка из других
+                # комментариев - добавляем в список
+                if g._comment["id"] == c._comment["pid"]:
+                    # print("+REFERENCE", g)
+                    filtered_group.append(g)
+        # если после фильтра у нас ничего не нашлось, то просто возьмём первый комментарий из дублей
+        if not filtered_group:
+            # print("-REFERENCE", group[0])
+            filtered_group.append(group[0])
+        groups[id_] = filtered_group
+
+
 def main():
     args = parse_args()
     result = parse_xml(args.INPUT)
+
+    if args.filter_doubles:
+        groups = group_comments(result)
+        filter_doubles(groups, result)
+        for i in groups.values():
+            print(i[0].to_json())
+        return
+
     if args.print_empty_urls:
         for i in result:
             if i.is_unknown_url():
-                print(i.to_json())
-    else:
-        for i in result:
-            print(i.to_json())
+                print(i[0].to_json())
+        return
+
+    for i in result:
+        print(i.to_json())
 
 
 if __name__ == "__main__":
