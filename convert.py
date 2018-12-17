@@ -8,6 +8,9 @@ from datetime import datetime
 from lxml import etree, objectify
 
 
+UNKNOWN_URL = "https://radio-t.com/old_comments_idb"
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("INPUT")
@@ -15,10 +18,50 @@ def parse_args():
     return parser.parse_args()
 
 
+class Comment(object):
+    _title = ""
+    _comment = {}
+
+    def __init__(self, titles, blogpost, comment):
+        self._title = str(blogpost["title"])
+        url = extract_url(titles, self._title)
+        parent_id = str(comment.get("parentid"))
+        if parent_id == "0":
+            parent_id = ""
+        else:
+            parent_id = "idb_%s" % parent_id
+        self._comment = {
+            "id": "idb_%s" % str(comment.get("id")),
+            "pid": parent_id,
+            "text": "<p>%s</p>" % str(comment["text"]),
+            "user": {
+                "name": str(comment["name"]),
+                "id": "idb_%s" % str(comment["name"]).replace(" ", "_"),
+                "picture": "",
+                "admin": False,
+                "ip": "",
+            },
+            "locator": {
+                "site": "radiot",
+                "url": url,
+            },
+            "score": int(comment["score"]),
+            "votes": {},
+            "time": convert_date(str(comment["gmt"])),
+        }
+
+
+    def to_json(self):
+        return json.dumps(self._comment, ensure_ascii=False)
+
+
+    def is_unknown_url(self):
+        return self._comment["locator"]["url"] == UNKNOWN_URL
+
+
 def parse_xml(path):
     with open(path, "rb") as f:
         xml = f.read()
-
 
     with open("titles.json", "rb") as f:
         titles = json.load(f)
@@ -28,40 +71,9 @@ def parse_xml(path):
     root = objectify.fromstring(xml)
     for blogpost in root.iterchildren():
         for comment in blogpost.comments.iterchildren():
-            url = extract_url(titles, str(blogpost["title"]))
-            if not url:
-                empty_urls.append({
-                    "title": str(blogpost["title"]),
-                    "id": str(comment.get("id")),
-                    "pid": str(comment.get("parentid")),
-                })
-                url = "https://radio-t.com/old_comments_idb"
+            result.append(Comment(blogpost=blogpost, comment=comment, titles=titles))
 
-            parent_id = str(comment.get("parentid"))
-            if parent_id == "0":
-                parent_id = ""
-            else:
-                parent_id = "idb_%s" % parent_id
-            result.append({
-                "id": "idb_%s" % str(comment.get("id")),
-                "pid": parent_id,
-                "text": "<p>%s</p>" % str(comment["text"]),
-                "user": {
-                    "name": str(comment["name"]),
-                    "id": "idb_%s" % str(comment["name"]).replace(" ", "_"),
-                    "picture": "",
-                    "admin": False,
-                    "ip": "",
-                },
-                "locator": {
-                    "site": "radiot",
-                    "url": url,
-                },
-                "score": int(comment["score"]),
-                "votes": {},
-                "time": convert_date(str(comment["gmt"])),
-            })
-    return result, empty_urls
+    return result
 
 
 def extract_url(titles, title):
@@ -73,7 +85,7 @@ def extract_url(titles, title):
         if title.startswith(tt):
             return t["url"]
 
-    return ""
+    return UNKNOWN_URL
 
 
 def convert_date(s):
@@ -84,14 +96,14 @@ def convert_date(s):
 
 def main():
     args = parse_args()
-    data, empty_urls = parse_xml(args.INPUT)
+    result = parse_xml(args.INPUT)
     if args.print_empty_urls:
-        result = empty_urls
+        for i in result:
+            if i.is_unknown_url():
+                print(i.to_json())
     else:
-        result = data
-
-    for i in result:
-        print(json.dumps(i, ensure_ascii=False))
+        for i in result:
+            print(i.to_json())
 
 
 if __name__ == "__main__":
