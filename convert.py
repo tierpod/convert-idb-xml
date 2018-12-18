@@ -163,6 +163,14 @@ def filter_doubles(groups, comments):
         #     if "честное слово, у этой темы 0% попасть" in g._comment["text"]:
         #         print("DEBUG:", g.to_json())
 
+        # если мы отфильтровали вообще все записи, то добавим в результат комментарий, который
+        # является ответом на другой комментарий
+        if not filtered_group:
+            for g in group:
+                if g._comment["pid"]:
+                    filtered_group.append(g)
+                    break
+
         # если мы отфильтровали вообще все записи, то добавим в результат любой из комментариев
         # дублей (например, первый)
         if not filtered_group:
