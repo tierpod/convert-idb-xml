@@ -117,6 +117,15 @@ def convert_date(s):
 
 
 def group_comments(comments):
+    """Группирует список комментариев в dict, где ключ - id комментария (может повторяться у
+    дублирующихся комментариев), а значение - список дублирующихся комментариев:
+
+    {
+        "comment id": [Comment, Comment, ...],
+        ...,
+    }
+    """
+
     result = {}
     for c in comments:
         cid = c.id()
@@ -139,19 +148,26 @@ def filter_doubles(groups, comments):
         # один комментарий, пропускаем
         if len(group) == 1:
             continue
+
         # больше одного комментария с одинаковым id
         filtered_group = []
+
+        # оставляем комментарии, на которые ссылаются из других комментариев
         for g in group:
             for c in comments:
-                # если на комментарий, который входит в группу дублей, есть ссылка из других
-                # комментариев - добавляем в список
                 if g._comment["id"] == c._comment["pid"]:
-                    # print("+REFERENCE", g)
                     filtered_group.append(g)
-        # если после фильтра у нас ничего не нашлось, то просто возьмём первый комментарий из дублей
+                    break
+
+        # for g in filtered_group:
+        #     if "честное слово, у этой темы 0% попасть" in g._comment["text"]:
+        #         print("DEBUG:", g.to_json())
+
+        # если мы отфильтровали вообще все записи, то добавим в результат любой из комментариев
+        # дублей (например, первый)
         if not filtered_group:
-            # print("-REFERENCE", group[0])
-            filtered_group.append(group[0])
+            filtered_group = [group[0]]
+
         groups[id_] = filtered_group
 
 
@@ -163,7 +179,8 @@ def main():
         groups = group_comments(result)
         filter_doubles(groups, result)
         for i in groups.values():
-            print(i[0].to_json())
+            for ii in i:
+                print(ii.to_json())
         return
 
     if args.print_empty_urls:
