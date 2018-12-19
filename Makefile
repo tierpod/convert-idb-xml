@@ -13,3 +13,5 @@ print-urls-mapping:
 shell:
 	docker run -it --rm -v $(PWD):/data --entrypoint /bin/sh idb-convert
 
+doctest:
+	python3 -m doctest convert.py

@@ -111,7 +111,11 @@ def extract_url(titles, title):
 
 
 def convert_date(s):
-    # 2007-09-04 19:30:45
+    """
+    >>> convert_date("2007-09-04 19:30:45")
+    '2007-09-04T19:30:45Z'
+    """
+
     d = datetime.strptime(s, "%Y-%m-%d %H:%M:%S")
     return d.isoformat() + "Z"
 

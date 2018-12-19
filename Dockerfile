@@ -1,6 +1,6 @@
 FROM alpine
 RUN apk update \
-    && apk add py3-lxml
+    && apk add py3-lxml make
 
 ADD . /app
 VOLUME ["/app", "/data"]
