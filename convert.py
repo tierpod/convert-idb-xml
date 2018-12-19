@@ -15,8 +15,7 @@ UNKNOWN_URL = "https://radio-t.com/old_comments_idb"
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("INPUT")
-    parser.add_argument("--print-empty-urls", action="store_true")
-    parser.add_argument("--filter-doubles", action="store_true")
+    parser.add_argument("--filter", action="store_true")
     return parser.parse_args()
 
 
@@ -98,6 +97,7 @@ class GroupedComments(object):
                 groups[cid] = [c]
 
         self._groups = groups
+        self._comments = comments
 
     def to_dict(self):
         j = []
@@ -106,14 +106,57 @@ class GroupedComments(object):
             jj["cid"] = cid
             jj["len"] = len(group)
             jj["comments"] = [g._comment for g in group]
-            # for i in jj["comments"]:
-            #     print(type(i), i)
             j.append(jj)
         return j
 
     def to_json(self, **kwargs):
         j = self.to_dict()
         return json.dumps(j, ensure_ascii=False, **kwargs)
+
+    def values(self):
+        return self._groups.values()
+
+    def filter(self):
+        """На id комментария-дубля могут быть ответы и надо давить дупликаты с учетом этого.
+
+        Убираем те комментарии-дубли, на id которых не ссылаются никакие другие комментарии.
+
+        Модифицирует self._groups.
+        """
+
+        for id_, group in self._groups.items():
+            # один комментарий, пропускаем
+            if len(group) == 1:
+                continue
+
+            # больше одного комментария с одинаковым id
+            filtered_group = []
+
+            # оставляем комментарии, на которые ссылаются из других комментариев
+            for g in group:
+                for c in self._comments:
+                    if g._comment["id"] == c._comment["pid"]:
+                        filtered_group.append(g)
+                        break
+
+            # for g in filtered_group:
+            #     if "честное слово, у этой темы 0% попасть" in g._comment["text"]:
+            #         print("DEBUG:", g.to_json())
+
+            # если мы отфильтровали вообще все записи, то добавим в результат комментарий, который
+            # является ответом на другой комментарий
+            if not filtered_group:
+                for g in group:
+                    if g._comment["pid"]:
+                        filtered_group.append(g)
+                        break
+
+            # если мы отфильтровали вообще все записи, то добавим в результат любой из комментариев
+            # дублей (например, первый)
+            if not filtered_group:
+                filtered_group = [group[0]]
+
+            self._groups[id_] = filtered_group
 
 
 def parse_xml(path):
@@ -187,75 +230,16 @@ def group_comments(comments):
     return gc
 
 
-def filter_doubles(groups, comments):
-    """На id комментария-дубля могут быть ответы и надо давить дупликаты с учетом этого.
-
-    Убираем те комментарии-дубли, на id которых не ссылаются никакие другие комментарии.
-
-    Модифицирует groups.
-    """
-
-    for id_, group in groups.items():
-        # один комментарий, пропускаем
-        if len(group) == 1:
-            continue
-
-        # больше одного комментария с одинаковым id
-        filtered_group = []
-
-        # оставляем комментарии, на которые ссылаются из других комментариев
-        for g in group:
-            for c in comments:
-                if g._comment["id"] == c._comment["pid"]:
-                    filtered_group.append(g)
-                    break
-
-        # for g in filtered_group:
-        #     if "честное слово, у этой темы 0% попасть" in g._comment["text"]:
-        #         print("DEBUG:", g.to_json())
-
-        # если мы отфильтровали вообще все записи, то добавим в результат комментарий, который
-        # является ответом на другой комментарий
-        if not filtered_group:
-            for g in group:
-                if g._comment["pid"]:
-                    filtered_group.append(g)
-                    break
-
-        # если мы отфильтровали вообще все записи, то добавим в результат любой из комментариев
-        # дублей (например, первый)
-        if not filtered_group:
-            filtered_group = [group[0]]
-
-        groups[id_] = filtered_group
-
-
 def main():
     args = parse_args()
     result = parse_xml(args.INPUT)
 
-    comments = parse_xml("./tests/data/themes_90.xml")
-    grouped = group_comments(comments)
-    print(grouped.to_json(indent=2))
-    return
-    # for group in grouped.values():
-    #     print("---")
-    #     print("LEN:", len(group))
-    #     print("TEXT:", group[0]._comment["text"])
-    # return
-
-    if args.filter_doubles:
+    if args.filter:
         groups = group_comments(result)
-        filter_doubles(groups, result)
+        groups.filter()
         for i in groups.values():
             for ii in i:
                 print(ii.to_json())
-        return
-
-    if args.print_empty_urls:
-        for i in result:
-            if i.is_unknown_url():
-                print(i[0].to_json())
         return
 
     for i in result:
