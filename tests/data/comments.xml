@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<output>
+
+<blogpost>
+<title> Темы для #90</title>
+<guid>213</guid>
+<comments>
+	<comment id='1' parentid='0'>
+		<isAnon>1</isAnon>
+		<name><![CDATA[username_1]]></name>
+		<text><![CDATA[единичный комментарий]]></text>
+		<date>2008-06-09 23:19:42</date>
+		<gmt>2008-06-09 23:19:42</gmt>
+		<score>0</score>
+	</comment>
+	<comment id='2' parentid='0'>
+		<isAnon>1</isAnon>
+		<name><![CDATA[username_2]]></name>
+		<text><![CDATA[единичный комментарий]]></text>
+		<date>2008-06-09 23:19:42</date>
+		<gmt>2008-06-09 23:19:42</gmt>
+		<score>0</score>
+	</comment>
+	
+	<comment id='3' parentid='0'>
+		<isAnon>1</isAnon>
+		<name><![CDATA[username_3]]></name>
+		<text><![CDATA[комментарии 3 и 4 дубли без дочерних комментариев]]></text>
+		<date>2008-06-09 23:19:42</date>
+		<gmt>2008-06-09 23:19:42</gmt>
+		<score>0</score>
+	</comment>
+	<comment id='4' parentid='0'>
+		<isAnon>1</isAnon>
+		<name><![CDATA[username_3]]></name>
+		<text><![CDATA[комментарии 3 и 4 дубли без дочерних комментариев]]></text>
+		<date>2008-06-09 23:19:42</date>
+		<gmt>2008-06-09 23:19:42</gmt>
+		<score>0</score>
+	</comment>
+	
+	<comment id='5' parentid='0'>
+		<isAnon>1</isAnon>
+		<name><![CDATA[username_5]]></name>
+		<text><![CDATA[комментарии 5 и 6 дубли, комментарий 7 - дочерний к 6]]></text>
+		<date>2008-06-09 23:19:42</date>
+		<gmt>2008-06-09 23:19:42</gmt>
+		<score>0</score>
+	</comment>
+	<comment id='6' parentid='0'>
+		<isAnon>1</isAnon>
+		<name><![CDATA[username_5]]></name>
+		<text><![CDATA[комментарии 5 и 6 дубли, комментарий 7 - дочерний к 6]]></text>
+		<date>2008-06-09 23:19:42</date>
+		<gmt>2008-06-09 23:19:42</gmt>
+		<score>0</score>
+	</comment>
+	<comment id='7' parentid='6'>
+		<isAnon>1</isAnon>
+		<name><![CDATA[username_7]]></name>
+		<text><![CDATA[дочерний комментарий к 6]]></text>
+		<date>2008-06-09 23:19:42</date>
+		<gmt>2008-06-09 23:19:42</gmt>
+		<score>0</score>
+	</comment>
+
+	<comment id='8' parentid='0'>
+		<isAnon>1</isAnon>
+		<name><![CDATA[username_8]]></name>
+		<text><![CDATA[комментарии 8 и 9 дубли, но 8 является корневым, а 9 является дочерним к другому]]></text>
+		<date>2008-06-09 23:19:42</date>
+		<gmt>2008-06-09 23:19:42</gmt>
+		<score>0</score>
+	</comment>
+	<comment id='9' parentid='1'>
+		<isAnon>1</isAnon>
+		<name><![CDATA[username_8]]></name>
+		<text><![CDATA[комментарии 8 и 9 дубли, но 8 является корневым, а 9 является дочерним к другому]]></text>
+		<date>2008-06-09 23:19:42</date>
+		<gmt>2008-06-09 23:19:42</gmt>
+		<score>0</score>
+	</comment>
+</comments>
+</blogpost>
+
+</output>

@@ -162,11 +162,11 @@ class GroupedComments(object):
 def parse_xml(path):
     """
     >>> import filecmp
-    >>> result = parse_xml("./tests/data/themes_90.xml")
-    >>> with open("./tests/data/themes_90.txt.tmp", "w") as f:
+    >>> result = parse_xml("./tests/data/comments.xml")
+    >>> with open("./tests/data/comments.txt.tmp", "w") as f:
     ...     for line in result:
     ...         _ = f.write(line.to_json() + "\\n")
-    >>> filecmp.cmp("./tests/data/themes_90.txt", "./tests/data/themes_90.txt.tmp")
+    >>> filecmp.cmp("./tests/data/comments.txt", "./tests/data/comments.txt.tmp")
     True
     """
 
@@ -217,10 +217,10 @@ def group_comments(comments):
     }
 
     >>> import json
-    >>> comments = parse_xml("./tests/data/themes_90.xml")
+    >>> comments = parse_xml("./tests/data/comments.xml")
     >>> grouped = group_comments(comments)
     >>> grouped_dict = grouped.to_dict()
-    >>> with open("./tests/data/grouped_themes_90.json", "rb") as f:
+    >>> with open("./tests/data/grouped.json", "rb") as f:
     ...     expected_dict = json.load(f)
     >>> grouped_dict == expected_dict
     True
@@ -233,6 +233,10 @@ def group_comments(comments):
 def main():
     args = parse_args()
     result = parse_xml(args.INPUT)
+
+    # groups = group_comments(result)
+    # print(groups.to_json(indent=2))
+    # return
 
     if args.filter:
         groups = group_comments(result)
