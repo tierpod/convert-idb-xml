@@ -83,6 +83,16 @@ class Comment(object):
 
 
 def parse_xml(path):
+    """
+    >>> import filecmp
+    >>> result = parse_xml("./tests/data/themes_90.xml")
+    >>> with open("./tests/data/themes_90.txt.tmp", "w") as f:
+    ...     for line in result:
+    ...         _ = f.write(line.to_json() + "\\n")
+    >>> filecmp.cmp("./tests/data/themes_90.txt", "./tests/data/themes_90.txt.tmp")
+    True
+    """
+
     with open(path, "rb") as f:
         xml = f.read()
 
