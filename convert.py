@@ -82,6 +82,40 @@ class Comment(object):
         )
 
 
+class GroupedComments(object):
+    def __init__(self, comments):
+        """
+        Args:
+            comments (list of Comment)
+        """
+
+        groups = {}
+        for c in comments:
+            cid = c.id()
+            if cid in groups:
+                groups[cid].append(c)
+            else:
+                groups[cid] = [c]
+
+        self._groups = groups
+
+    def to_dict(self):
+        j = []
+        for cid, group in self._groups.items():
+            jj = {}
+            jj["cid"] = cid
+            jj["len"] = len(group)
+            jj["comments"] = [g._comment for g in group]
+            # for i in jj["comments"]:
+            #     print(type(i), i)
+            j.append(jj)
+        return j
+
+    def to_json(self, **kwargs):
+        j = self.to_dict()
+        return json.dumps(j, ensure_ascii=False, **kwargs)
+
+
 def parse_xml(path):
     """
     >>> import filecmp
@@ -138,16 +172,19 @@ def group_comments(comments):
         "comment id": [Comment, Comment, ...],
         ...,
     }
+
+    >>> import json
+    >>> comments = parse_xml("./tests/data/themes_90.xml")
+    >>> grouped = group_comments(comments)
+    >>> grouped_dict = grouped.to_dict()
+    >>> with open("./tests/data/grouped_themes_90.json", "rb") as f:
+    ...     expected_dict = json.load(f)
+    >>> grouped_dict == expected_dict
+    True
     """
 
-    result = {}
-    for c in comments:
-        cid = c.id()
-        if cid in result:
-            result[cid].append(c)
-        else:
-            result[cid] = [c]
-    return result
+    gc = GroupedComments(comments)
+    return gc
 
 
 def filter_doubles(groups, comments):
@@ -196,6 +233,16 @@ def filter_doubles(groups, comments):
 def main():
     args = parse_args()
     result = parse_xml(args.INPUT)
+
+    comments = parse_xml("./tests/data/themes_90.xml")
+    grouped = group_comments(comments)
+    print(grouped.to_json(indent=2))
+    return
+    # for group in grouped.values():
+    #     print("---")
+    #     print("LEN:", len(group))
+    #     print("TEXT:", group[0]._comment["text"])
+    # return
 
     if args.filter_doubles:
         groups = group_comments(result)
